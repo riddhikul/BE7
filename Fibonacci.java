@@ -9,6 +9,7 @@ public class Fibonacci {
         System.out.println("*".repeat(20));
         System.out.println("Iterative Fibonacci: ");
         iterFibo(N);
+        sc.close();
 /*  Time Complexity: O(N) 
 Auxiliary Space: O(1) for iterative */
 
