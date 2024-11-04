@@ -1,92 +1,57 @@
 class NQueens:
-    def __init__(self) -> None:
-        self.size = int(input("Enter size of chessboard: "))
-        self.board = [[False]*self.size for _ in range(self.size)]
-        self.count = 0
-    def printBoard(self):
-        for row in self.board:
-            for ele in row:
-                if ele == True:
-                    print("Q",end=" ")
-                else:
-                    print("X",end=" ")
-            print()
+    
+    def __init__(self, n):
+        self.n = n
+        self.board = [[0] * n for _ in range(n)]  # initialize the chess board
+
+    def print_board(self):  # print the chess board
         print()
-    
-    def isSafe(self,row:int,col:int) -> bool:
+        for row in self.board:
+            print(' '.join('Q' if cell == 1 else '.' for cell in row))
+        print()
 
-        # Check Column(above and below of the (row,col))
-        for i in self.board:
-            if i[col] == True:
+    def is_safe(self, row, col):  # check if placing a queen at a specific position is safe
+        for i in range(col):
+            if self.board[row][i] == 1:
                 return False
-        
-        # Check backward slash(\) diagonal only in above direction
-        i = row
-        j = col
-        while i >= 0 and j >= 0:
-            if self.board[i][j] == True:
+
+        for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+            if self.board[i][j] == 1:
                 return False
-            i -= 1
-            j -= 1
-        # Check backward slash(\) diagonal only in below direction
-        i = row
-        j = col
-        while i < self.size and j < self.size:
-            if self.board[i][j] == True:
+
+        for i, j in zip(range(row, self.n), range(col, -1, -1)):
+            if self.board[i][j] == 1:
                 return False
-            i += 1
-            j += 1
-        
-        # Check forward slash diagonal(/) only in above direction
-        i = row
-        j = col
-        while i >= 0 and j < self.size:
-            if self.board[i][j] == True:
-                return False
-            i -= 1
-            j += 1
-        
-         # Check forward slash diagonal(/) only in below direction
-        i = row
-        j = col
-        while i < self.size and j >= 0:
-            if self.board[i][j] == True:
-                return False
-            i += 1
-            j -= 1
-        
+
         return True
-    
-    def set_position_first_queen(self):
-        print("Enter coordinates of first queen: ")
-        row = int(input(f"Enter row (1-{self.size}): "))
-        col = int(input(f"Enter column (1-{self.size}): "))
-        self.board[row-1][col-1] = True
-        self.printBoard()
-    
-    def solve(self,row:int):
-        if row == self.size:
-            self.count += 1
-            self.printBoard()
-            return
-        
-        if any(self.board[row]) is True:
-            self.solve(row+1)
-            return
 
-        for col in range(self.size):
-            if self.isSafe(row,col) == True:
-                self.board[row][col] = True
-                self.solve(row+1)
-                self.board[row][col] = False
-    
-    def displayMessage(self):
-        if self.count > 0:
-            print("Solution exists for the given position of the queen.")
-        else:
-            print("Solution doesn't exist for the given position of the queen.")
+    def solve_backtracking(self, col): 
+        if col >= self.n:
+            return True
 
-solver = NQueens()
-solver.set_position_first_queen()
-solver.solve(0)
-solver.displayMessage()
+        for i in range(self.n):
+            if self.is_safe(i, col):
+                self.board[i][col] = 1
+
+                if self.solve_backtracking(col + 1):
+                    return True
+
+                self.board[i][col] = 0  # backtrack
+
+        return False
+
+    def backtracking(self): 
+        if not self.solve_backtracking(0):
+            print("\nNo solution!")
+            return False
+
+        self.print_board()
+        return True
+
+N = int(input("\nEnter the size of the chessboard (N): "))
+
+if N < 0 or N > 8:
+    print("\nInvalid board size. N should be between 0 and 8.")
+else:
+    q = NQueens(N)
+    q.backtracking()  # Call only the backtracking method
